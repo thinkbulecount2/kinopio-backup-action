@@ -10,6 +10,4 @@ outputs:
     description: "The time we greeted you"
 runs:
   using: "node12"
-  env:
-    API_KEY: ${{ secrets.KINOPIO_API_KEY }}
   main: "dist/index.js"
