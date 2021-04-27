@@ -3,6 +3,5 @@ jobs:
     runs-on: ubuntu-latest
     name: Backup my k spaces
     steps:
-      - name: step1
-      id: hello
-      uses: bentsai/kinopio-backup-v2@v1
+      - name: Backup
+        uses: bentsai/kinopio-backup-v2@v1
