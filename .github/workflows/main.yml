@@ -6,4 +6,4 @@ jobs:
     name: Backup my k spaces
     steps:
       - name: Backup
-        uses: bentsai/kinopio-backup-v2@v1
+        uses: bentsai/kinopio-backup-v2@v1.1
