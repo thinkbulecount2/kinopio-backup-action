@@ -7004,11 +7004,21 @@ try {
 const saveSpace = async (space) => {
   try {
     console.log(space.name);
-    fs.writeFileSync(
-      filenamify(space.name) + ".json",
-      JSON.stringify(space, null, 2),
-      "utf-8"
+
+    const response = await needle(
+      "get",
+      `http://api.kinopio.club/space/${space.id}`,
+      {
+        headers: { Authorization: apiKey },
+      }
     );
+    if (response.statusCode == 200) {
+      fs.writeFileSync(
+        filenamify(space.name) + ".json",
+        JSON.stringify(response.body, null, 2),
+        "utf-8"
+      );
+    }
   } catch (error) {
     console.log(error);
   }
