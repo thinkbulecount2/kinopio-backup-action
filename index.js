@@ -2,13 +2,18 @@
 
 const fs = require("fs");
 const needle = require("needle");
+const filenamify = require("filenamify");
 
 const { lastRun } = JSON.parse(fs.readFileSync("config.json", "utf-8"));
 
 const saveSpace = async (space) => {
   try {
     console.log(space.name);
-    fs.writeFileSync(space.name + ".json", JSON.stringify(space), "utf-8");
+    fs.writeFileSync(
+      filenamify(space.name) + ".json",
+      JSON.stringify(space),
+      "utf-8"
+    );
   } catch (error) {
     console.log(error);
   }

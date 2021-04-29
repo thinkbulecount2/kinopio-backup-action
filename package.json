@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/bentsai/kinopio-backup-v2#readme",
   "dependencies": {
+    "filenamify": "^4.3.0",
     "needle": "^2.6.0"
   }
 }
