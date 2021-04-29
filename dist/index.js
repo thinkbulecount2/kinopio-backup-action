@@ -7002,7 +7002,7 @@ const saveSpace = async (space) => {
     console.log(space.name);
     fs.writeFileSync(
       filenamify(space.name) + ".json",
-      JSON.stringify(space),
+      JSON.stringify(space, null, 2),
       "utf-8"
     );
   } catch (error) {
