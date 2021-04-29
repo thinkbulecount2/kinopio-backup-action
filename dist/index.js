@@ -724,6 +724,120 @@ formatters.O = function (v) {
 
 /***/ }),
 
+/***/ 7556:
+/***/ ((module) => {
+
+"use strict";
+
+
+var matchOperatorsRe = /[|\\{}()[\]^$+*?.]/g;
+
+module.exports = function (str) {
+	if (typeof str !== 'string') {
+		throw new TypeError('Expected a string');
+	}
+
+	return str.replace(matchOperatorsRe, '\\$&');
+};
+
+
+/***/ }),
+
+/***/ 4264:
+/***/ ((module) => {
+
+"use strict";
+
+/* eslint-disable no-control-regex */
+// TODO: remove parens when Node.js 6 is targeted. Node.js 4 barfs at it.
+module.exports = () => (/[<>:"\/\\|?*\x00-\x1F]/g);
+module.exports.windowsNames = () => (/^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/i);
+
+
+/***/ }),
+
+/***/ 4006:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const path = __nccwpck_require__(5622);
+const filenamify = __nccwpck_require__(2466);
+
+const filenamifyPath = (filePath, options) => {
+	filePath = path.resolve(filePath);
+	return path.join(path.dirname(filePath), filenamify(path.basename(filePath), options));
+};
+
+module.exports = filenamifyPath;
+
+
+/***/ }),
+
+/***/ 2466:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const trimRepeated = __nccwpck_require__(3315);
+const filenameReservedRegex = __nccwpck_require__(4264);
+const stripOuter = __nccwpck_require__(8599);
+
+// Doesn't make sense to have longer filenames
+const MAX_FILENAME_LENGTH = 100;
+
+const reControlChars = /[\u0000-\u001f\u0080-\u009f]/g; // eslint-disable-line no-control-regex
+const reRelativePath = /^\.+/;
+const reTrailingPeriods = /\.+$/;
+
+const filenamify = (string, options = {}) => {
+	if (typeof string !== 'string') {
+		throw new TypeError('Expected a string');
+	}
+
+	const replacement = options.replacement === undefined ? '!' : options.replacement;
+
+	if (filenameReservedRegex().test(replacement) && reControlChars.test(replacement)) {
+		throw new Error('Replacement string cannot contain reserved filename characters');
+	}
+
+	string = string.replace(filenameReservedRegex(), replacement);
+	string = string.replace(reControlChars, replacement);
+	string = string.replace(reRelativePath, replacement);
+	string = string.replace(reTrailingPeriods, '');
+
+	if (replacement.length > 0) {
+		string = trimRepeated(string, replacement);
+		string = string.length > 1 ? stripOuter(string, replacement) : string;
+	}
+
+	string = filenameReservedRegex.windowsNames().test(string) ? string + replacement : string;
+	string = string.slice(0, typeof options.maxLength === 'number' ? options.maxLength : MAX_FILENAME_LENGTH);
+
+	return string;
+};
+
+module.exports = filenamify;
+
+
+/***/ }),
+
+/***/ 5397:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const filenamify = __nccwpck_require__(2466);
+const filenamifyPath = __nccwpck_require__(4006);
+
+const filenamifyCombined = filenamify;
+filenamifyCombined.path = filenamifyPath;
+
+module.exports = filenamify;
+
+
+/***/ }),
+
 /***/ 715:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -6688,6 +6802,43 @@ module.exports = safer
 
 /***/ }),
 
+/***/ 8599:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+var escapeStringRegexp = __nccwpck_require__(7556);
+
+module.exports = function (str, sub) {
+	if (typeof str !== 'string' || typeof sub !== 'string') {
+		throw new TypeError();
+	}
+
+	sub = escapeStringRegexp(sub);
+	return str.replace(new RegExp('^' + sub + '|' + sub + '$', 'g'), '');
+};
+
+
+/***/ }),
+
+/***/ 3315:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+var escapeStringRegexp = __nccwpck_require__(7556);
+
+module.exports = function (str, target) {
+	if (typeof str !== 'string' || typeof target !== 'string') {
+		throw new TypeError('Expected a string');
+	}
+
+	return str.replace(new RegExp('(?:' + escapeStringRegexp(target) + '){2,}', 'g'), target);
+};
+
+
+/***/ }),
+
 /***/ 4341:
 /***/ ((module) => {
 
@@ -6842,13 +6993,18 @@ var __webpack_exports__ = {};
 
 const fs = __nccwpck_require__(5747);
 const needle = __nccwpck_require__(5997);
+const filenamify = __nccwpck_require__(5397);
 
 const { lastRun } = JSON.parse(fs.readFileSync("config.json", "utf-8"));
 
 const saveSpace = async (space) => {
   try {
     console.log(space.name);
-    fs.writeFileSync(space.name + ".json", JSON.stringify(space), "utf-8");
+    fs.writeFileSync(
+      filenamify(space.name) + ".json",
+      JSON.stringify(space),
+      "utf-8"
+    );
   } catch (error) {
     console.log(error);
   }
