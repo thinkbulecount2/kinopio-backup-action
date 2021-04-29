@@ -6843,10 +6843,12 @@ var __webpack_exports__ = {};
 const fs = __nccwpck_require__(5747);
 const needle = __nccwpck_require__(5997);
 
+const { lastRun } = JSON.parse(fs.readFileSync("config.json", "utf-8"));
+
 const saveSpace = async (space) => {
   try {
     console.log(space.name);
-    // fs.writeFileSync(space.name, JSON.stringify(space), "utf-8");
+    fs.writeFileSync(space.name + ".json", JSON.stringify(space), "utf-8");
   } catch (error) {
     console.log(error);
   }
@@ -6864,7 +6866,9 @@ const saveSpaces = async () => {
     if (response.statusCode == 200) {
       for (const space of response.body) {
         console.log(space.name);
-        await saveSpace(space);
+        if (lastRun == null || new Date(lastRun) < new Date(space.updatedAt)) {
+          await saveSpace(space);
+        }
       }
     }
   } catch (error) {
@@ -6872,7 +6876,14 @@ const saveSpaces = async () => {
   }
 };
 
-saveSpaces().catch((e) => console.error(e));
+saveSpaces()
+  .then(() => {
+    fs.writeFileSync(
+      "config.json",
+      JSON.stringify({ lastRun: new Date() }, "utf8")
+    );
+  })
+  .catch((e) => console.error(e));
 
 })();
 
