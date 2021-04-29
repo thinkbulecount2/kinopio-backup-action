@@ -1,1 +1,1 @@
-# kinopio-backup-v2
+# Kinopio backup action
