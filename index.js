@@ -3,8 +3,12 @@
 const fs = require("fs");
 const needle = require("needle");
 const filenamify = require("filenamify");
+const CONFIG_FILE = ".config.json";
 
-const { lastRun } = JSON.parse(fs.readFileSync("config.json", "utf-8"));
+let lastRun = null;
+try {
+  ({ lastRun } = JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8")));
+} catch (error) {}
 
 const saveSpace = async (space) => {
   try {
@@ -44,7 +48,7 @@ const saveSpaces = async () => {
 saveSpaces()
   .then(() => {
     fs.writeFileSync(
-      "config.json",
+      CONFIG_FILE,
       JSON.stringify({ lastRun: new Date() }, "utf8")
     );
   })

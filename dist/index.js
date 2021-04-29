@@ -6994,8 +6994,12 @@ var __webpack_exports__ = {};
 const fs = __nccwpck_require__(5747);
 const needle = __nccwpck_require__(5997);
 const filenamify = __nccwpck_require__(5397);
+const CONFIG_FILE = ".config.json";
 
-const { lastRun } = JSON.parse(fs.readFileSync("config.json", "utf-8"));
+let lastRun = null;
+try {
+  ({ lastRun } = JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8")));
+} catch (error) {}
 
 const saveSpace = async (space) => {
   try {
@@ -7035,7 +7039,7 @@ const saveSpaces = async () => {
 saveSpaces()
   .then(() => {
     fs.writeFileSync(
-      "config.json",
+      CONFIG_FILE,
       JSON.stringify({ lastRun: new Date() }, "utf8")
     );
   })
