@@ -7009,7 +7009,7 @@ const saveSpace = async (space) => {
       "get",
       `http://api.kinopio.club/space/${space.id}`,
       {
-        headers: { Authorization: apiKey },
+        headers: { Authorization: process.env.KINOPIO_API_KEY },
       }
     );
     if (response.statusCode == 200) {
@@ -7030,7 +7030,7 @@ const saveSpaces = async () => {
       "get",
       "http://api.kinopio.club/user/spaces",
       {
-        headers: { Authorization: process.env.API_KEY },
+        headers: { Authorization: process.env.KINOPIO_API_KEY },
       }
     );
     if (response.statusCode == 200) {
