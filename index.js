@@ -23,7 +23,7 @@ const saveSpace = async (space) => {
     );
     if (response.statusCode == 200) {
       fs.writeFileSync(
-        filenamify(space.name) + ".json",
+        `${filenamify(space.name)} - ${space.id.substring(0, 5)}.json`,
         JSON.stringify(response.body, null, 2),
         "utf-8"
       );
