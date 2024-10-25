@@ -1,4 +1,4 @@
-name: "Hello World"
+name: "kinopio-backup-action update"
 description: "Greet someone and record the time"
 runs:
   using: "node16"
